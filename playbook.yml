@@ -1,0 +1,9 @@
+---
+- name: Gerenciar switches Huawei
+  hosts: huawei
+  gather_facts: false
+
+  roles:
+    - { role: backup, when: backup_enabled | default(true) }
+    - { role: restore, when: restore_enabled | default(false) }
+    - { role: apply_acls, when: apply_acls_enabled | default(false) }

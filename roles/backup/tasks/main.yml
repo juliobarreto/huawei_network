@@ -1,0 +1,23 @@
+---
+- name: Coletar informações do sistema
+  ansible.builtin.setup:
+
+- name: Criar diretório de backup no localhost se não existir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ backup_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Fazer backup da configuração
+  community.network.ce_command:
+    commands:
+      - display current-configuration
+  register: backup_output
+
+- name: Salvar backup no localhost
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ backup_output.stdout | join('\n') }}"
+    dest: "{{ backup_path }}/huawei_config_{{ ansible_date_time['epoch'] }}_{{ inventory_hostname }}.cfg"
+    mode: '0644'

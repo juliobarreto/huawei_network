@@ -1,0 +1,11 @@
+---
+- name: Encontrar o último backup disponível
+  delegate_to: localhost
+  ansible.builtin.shell: "set -o pipefail && ls -1t {{ backup_path }}/huawei_config_*_{{ inventory_hostname }}.cfg | head -n 1"
+  register: latest_backup
+  changed_when: false
+
+- name: Restaurar backup no switch
+  community.network.ce_config:
+    src: "{{ latest_backup.stdout }}"
+  when: latest_backup.stdout | length > 0

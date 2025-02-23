@@ -1,0 +1,10 @@
+---
+- name: Fazer backup antes da aplicação das ACLs
+  ansible.builtin.import_role:
+    name: backup
+
+- name: Configurar ACLs no switch
+  community.network.ce_config:
+    lines: "{{ lookup('template', 'acl_config.j2') }}"
+  notify: Apply ACL changes
+  when: acl_rules | length > 0
