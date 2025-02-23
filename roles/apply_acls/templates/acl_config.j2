@@ -1,0 +1,7 @@
+{% for rule in acl_rules %}
+acl {{ rule.acl_number }}
+ {% for entry in rule.entries %}
+  rule {{ entry.rule_id }} {{ entry.action }} source {{ entry.source }}
+ {% endfor %}
+quit
+{% endfor %}
