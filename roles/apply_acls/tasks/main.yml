@@ -3,8 +3,21 @@
   ansible.builtin.import_role:
     name: backup
 
+- name: Converter acl_rules de string para YAML (se necessário)
+  ansible.builtin.set_fact:
+    acl_rules_parsed: "{{ acl_rules | from_yaml }}"
+  when: acl_rules is string
+
+- name: Verificar estrutura de ACLs convertida
+  ansible.builtin.debug:
+    var: acl_rules_parsed
+
+- name: Verificar conteúdo gerado do template
+  ansible.builtin.debug:
+    msg: "{{ lookup('template', 'acl_config.j2') }}"
+
 - name: Configurar ACLs no switch
   community.network.ce_config:
-    lines: "{{ lookup('template', 'acl_config.j2') }}"
-  notify: Apply ACL changes
+    lines: "{{ lookup('template', 'acl_config.j2').splitlines() }}"
   when: acl_rules | length > 0
+
