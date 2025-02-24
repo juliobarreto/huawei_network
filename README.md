@@ -30,11 +30,54 @@ Este projeto contém roles do Ansible para backup, restauração e aplicação d
      apply_acls_enabled: true
      ```
 
-5. **Executar o template**:
+5. **Criar Formulários no AAP**:
+   - Vá até "Templates" e edite o template criado.
+   - Habilite a opção "Prompt on launch" para permitir a entrada dinâmica de variáveis.
+   - Adicione os seguintes campos no formulário:
+     - `backup_enabled` (booleano): Define se o backup deve ser realizado antes das mudanças.
+     - `restore_enabled` (booleano): Define se a restauração do último backup deve ser feita.
+     - `apply_acls_enabled` (booleano): Define se as ACLs devem ser aplicadas.
+     - `acl_rules` (JSON/YAML): Permite a entrada manual de regras ACL no momento da execução.
+   - Salve as alterações e teste a execução do job template.
+
+6. **Executar o template**:
    - Salve e inicie o job template.
    - Monitore os logs de execução para verificar possíveis erros.
 
-## Uso de ACLs
+Ao executar o job template, um exemplo de preenchimento das variáveis pode ser:
+
+```yaml
+backup_enabled: true
+restore_enabled: false
+apply_acls_enabled: true
+acl_rules:
+  - acl_number: 3001
+    entries:
+      - rule_id: 5
+        action: permit
+        source: 192.168.1.0 0.0.0.255
+      - rule_id: 10
+        action: deny
+        source: any
+  - acl_number: 3002
+    entries:
+      - rule_id: 5
+        action: permit
+        source: 10.0.0.0 0.255.255.255
+      - rule_id: 15
+        action: deny
+        source: any
+  - acl_number: 3003
+    entries:
+      - rule_id: 7
+        action: permit
+        source: 172.16.0.0 0.0.255.255
+      - rule_id: 20
+        action: deny
+        source: any
+```
+
+## Definição de ACLs
 
 Para definir ACLs personalizadas para os switches Huawei, adicione a variável `acl_rules` no inventário ou na execução do template. Segue um exemplo de configuração:
 
