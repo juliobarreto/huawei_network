@@ -1,0 +1,9 @@
+system-view
+{% for rule in acl_rules_parsed.acl_rules | default([]) if rule.acl_number is defined -%}
+acl number {{ rule.acl_number }}
+{% for entry in rule.entries | default([]) -%}
+  rule {{ entry.rule_id | trim }} {{ entry.action | trim }} {% if entry.protocol is defined %}protocol {{ entry.protocol | trim }}{% else %}protocol ip{% endif %} ip source {{ entry.source | trim }}{% if entry.destination is defined %} destination {{ entry.destination | trim }}{% endif %}
+{% endfor %}
+quit
+{% endfor %}
+return

@@ -11,10 +11,23 @@
   ansible.builtin.debug:
     msg: "{{ lookup('template', 'acl_config.j2') }}"
 
+# - name: Configurar ACLs no switch com cli_command
+#   ansible.netcommon.cli_command:
+#     command: "{{ lookup('template', 'acl_cli.j2') }}"
+#   register: cli_command_output
+#   ignore_errors: true
+#   when: acl_rules_parsed | default() | length > 0
+
+# - name: Exibir saída do ce_config
+#   ansible.builtin.debug:
+#     var: cli_command_output
+#   when: acl_rules_parsed | default([]) | length > 0
+
 - name: Configurar ACLs no switch com ce_config
   community.network.ce_config:
     lines: "{{ lookup('template', 'acl_config.j2').split('\n') | list }}"
   register: ce_config_output
+  ignore_errors: true
   when: acl_rules_parsed | default([]) | length > 0
 
 - name: Exibir saída do ce_config
