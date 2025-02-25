@@ -1,7 +1,8 @@
-{% for rule in acl_rules_parsed | default([]) if rule.acl_number is defined %}
-acl {{ rule.acl_number }}
- {% for entry in rule.entries %}
-  rule {{ entry.rule_id }} {{ entry.action }} {% if entry.protocol is defined %}protocol {{ entry.protocol }}{% endif %} source {{ entry.source }} {% if entry.destination is defined %}destination {{ entry.destination }}{% endif %}
- {% endfor %}
+{% for rule in acl_rules_parsed.acl_rules | default([]) if rule.acl_number is defined -%}
+acl number {{ rule.acl_number }}
+{% for entry in rule.entries | default([]) -%}
+  rule {{ entry.rule_id | trim }} {{ entry.action | trim }}{% if entry.protocol is defined %} protocol {{ entry.protocol | trim }}{% endif %} source {{ entry.source | trim }}{% if entry.destination is defined %} destination {{ entry.destination | trim }}{% endif %}
+
+{% endfor %}
 quit
 {% endfor %}

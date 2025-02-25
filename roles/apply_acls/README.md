@@ -10,8 +10,10 @@ acl_rules:
     entries:
       - rule_id: 5
         action: permit
+        protocol: ip
         source: 192.168.1.0 0.0.0.255
       - rule_id: 10
         action: deny
+        protocol: ip
         source: any
 ```

@@ -5,19 +5,19 @@
 
 - name: Converter acl_rules de string para YAML (se necessário)
   ansible.builtin.set_fact:
-    acl_rules_parsed: "{{ acl_rules | from_yaml }}"
-  when: acl_rules is string
-
-- name: Verificar estrutura de ACLs convertida
-  ansible.builtin.debug:
-    var: acl_rules_parsed
+    acl_rules_parsed: "{{ acl_rules | from_yaml if acl_rules is string else acl_rules }}"
 
 - name: Verificar conteúdo gerado do template
   ansible.builtin.debug:
     msg: "{{ lookup('template', 'acl_config.j2') }}"
 
-- name: Configurar ACLs no switch
+- name: Configurar ACLs no switch com ce_config
   community.network.ce_config:
-    lines: "{{ lookup('template', 'acl_config.j2').splitlines() }}"
-  when: acl_rules | length > 0
+    lines: "{{ lookup('template', 'acl_config.j2').split('\n') | list }}"
+  register: ce_config_output
+  when: acl_rules_parsed | default([]) | length > 0
 
+- name: Exibir saída do ce_config
+  ansible.builtin.debug:
+    var: ce_config_output
+  when: acl_rules_parsed | default([]) | length > 0

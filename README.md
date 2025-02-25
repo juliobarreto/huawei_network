@@ -58,21 +58,26 @@ acl_rules:
         source: 192.168.1.0 0.0.0.255
       - rule_id: 10
         action: deny
+        protocol: ip
         source: any
   - acl_number: 3002
     entries:
       - rule_id: 5
         action: permit
+        protocol: ip
         source: 10.0.0.0 0.255.255.255
       - rule_id: 15
         action: deny
+        protocol: ip
         source: any
   - acl_number: 3003
     entries:
       - rule_id: 7
         action: permit
+        protocol: ip
         source: 172.16.0.0 0.0.255.255
       - rule_id: 20
+        protocol: ip
         action: deny
         source: any
 ```
@@ -87,15 +92,18 @@ acl_rules:
     entries:
       - rule_id: 5
         action: permit
+        protocol: ip
         source: 192.168.1.0 0.0.0.255
       - rule_id: 10
         action: deny
+        protocol: ip
         source: any
 ```
 
 - `acl_number`: Define o número da ACL a ser configurada no switch.
 - `rule_id`: Identificador da regra dentro da ACL.
 - `action`: Ação a ser tomada (`permit` ou `deny`).
+- `protocol`: Protocolo utilizado na regra.
 - `source`: Endereço IP ou máscara correspondente à regra.
 
 Essa configuração será aplicada aos switches pertencentes ao grupo `huawei` no inventário.
