@@ -35,6 +35,7 @@ Este projeto contém roles do Ansible para backup, restauração e aplicação d
    - Habilite a opção "Prompt on launch" para permitir a entrada dinâmica de variáveis.
    - Adicione os seguintes campos no formulário:
      - `backup_enabled` (booleano): Define se o backup deve ser realizado antes das mudanças.
+     - `backup_path` (string): Caminho no sistema onde o backup será gravado
      - `restore_enabled` (booleano): Define se a restauração do último backup deve ser feita.
      - `apply_acls_enabled` (booleano): Define se as ACLs devem ser aplicadas.
      - `acl_rules` (JSON/YAML): Permite a entrada manual de regras ACL no momento da execução.
