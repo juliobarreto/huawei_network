@@ -19,5 +19,5 @@
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ backup_output.stdout | join('\n') }}"
-    dest: "{{ backup_path }}/huawei_config_{{ ansible_date_time['epoch'] }}_{{ inventory_hostname }}.cfg"
+    dest: "{{ backup_path }}/huawei_config_{{ lookup('pipe', 'TZ=America/Sao_Paulo date +%Y%m%d') }}_{{ lookup('pipe', 'TZ=America/Sao_Paulo date +%H:%M:%S') }}_{{ inventory_hostname }}.cfg"
     mode: '0644'
