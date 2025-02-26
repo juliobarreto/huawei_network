@@ -1,4 +1,5 @@
----
+# tasks file for apply_acls
+
 - name: Fazer backup antes da aplicação das ACLs
   ansible.builtin.import_role:
     name: backup
@@ -9,7 +10,50 @@
 
 - name: Verificar conteúdo gerado do template
   ansible.builtin.debug:
-    msg: "{{ lookup('template', 'acl_config.j2') }}"
+    msg: "{{ lookup('template', 'acl_cli.j2') }}"
+
+- name: Exibir conteúdo de acl_rules_parsed
+  ansible.builtin.debug:
+    var: acl_rules_parsed
+
+- name: Testar conectividade com o switch
+  ansible.netcommon.cli_command:
+    command: "display version"
+  register: display_version_output
+  ignore_errors: true
+
+- name: Exibir saída de display version
+  ansible.builtin.debug:
+    var: display_version_output
+
+- name: Configurar ACLs no switch com cli_command
+  ansible.netcommon.cli_command:
+    command: "{{ lookup('template', 'acl_cli.j2') }}"
+  register: cli_command_output
+  ignore_errors: true
+  when: acl_rules_parsed | default([]) | length > 0
+
+- name: Exibir saída do cli_command
+  ansible.builtin.debug:
+    var: cli_command_output
+  when: acl_rules_parsed | default([]) | length > 0
+
+- name: Verificar valores das variáveis
+  ansible.builtin.debug:
+    msg: "protocol={{ entry.protocol | default('ip') }}, source={{ entry.source | default('N/A') | trim }}, destination={{ entry.destination | default('N/A') | trim }}"
+  when: entry is defined
+  loop: "{{ acl_rules_parsed.acl_rules | default([]) }}"
+
+- name: Verificar variável entry.source
+  ansible.builtin.debug:
+    msg: "{{ entry.source }}"
+  loop: "{{ acl_rules_parsed.acl_rules | default([]) }}"
+  when: entry.source is defined
+
+- name: Exibir comando gerado pelo template
+  ansible.builtin.debug:
+    msg: "{{ lookup('template', 'acl_cli.j2') }}"
+
 
 # - name: Configurar ACLs no switch com cli_command
 #   ansible.netcommon.cli_command:
@@ -23,14 +67,3 @@
 #     var: cli_command_output
 #   when: acl_rules_parsed | default([]) | length > 0
 
-- name: Configurar ACLs no switch com ce_config
-  community.network.ce_config:
-    lines: "{{ lookup('template', 'acl_config.j2').split('\n') | list }}"
-  register: ce_config_output
-  ignore_errors: true
-  when: acl_rules_parsed | default([]) | length > 0
-
-- name: Exibir saída do ce_config
-  ansible.builtin.debug:
-    var: ce_config_output
-  when: acl_rules_parsed | default([]) | length > 0
